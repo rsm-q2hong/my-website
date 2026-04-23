@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Qianhui Hong">
+<meta name="dcterms.date" content="2026-04-22">
 
-<title>index – Qianhui Hong</title>
+<title>Replication of Card and Krueger (1994) – Qianhui Hong</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -115,17 +152,216 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#main-analysis" id="toc-main-analysis" class="nav-link" data-scroll-target="#main-analysis">Main Analysis</a>
+  <ul class="collapse">
+  <li><a href="#data-and-variable-construction" id="toc-data-and-variable-construction" class="nav-link" data-scroll-target="#data-and-variable-construction">Data and Variable Construction</a></li>
+  <li><a href="#handling-store-closures" id="toc-handling-store-closures" class="nav-link" data-scroll-target="#handling-store-closures">Handling Store Closures</a></li>
+  <li><a href="#baseline-characteristics-table-2" id="toc-baseline-characteristics-table-2" class="nav-link" data-scroll-target="#baseline-characteristics-table-2">Baseline Characteristics (Table 2)</a></li>
+  <li><a href="#difference-in-differences-results" id="toc-difference-in-differences-results" class="nav-link" data-scroll-target="#difference-in-differences-results">Difference-in-Differences Results</a></li>
+  <li><a href="#regression-results" id="toc-regression-results" class="nav-link" data-scroll-target="#regression-results">Regression Results</a></li>
+  </ul></li>
+  <li><a href="#additional" id="toc-additional" class="nav-link" data-scroll-target="#additional">Additional</a>
+  <ul class="collapse">
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Replication of Card and Krueger (1994)</h1>
+<p class="subtitle lead">Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania</p>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Qianhui Hong </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 22, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>A common prediction in economics is that raising the minimum wage reduces employment. Higher labor costs mean firms hire fewer workers, and standard competitive theory is pretty clear on this. But empirical evidence tells a more complicated story.</p>
+<p>Card and Krueger (1994) test this prediction using a natural experiment. On April 1, 1992, New Jersey raised its minimum wage from $4.25 to $5.05 per hour. Pennsylvania, right next door, kept its wage unchanged. The authors surveyed fast-food restaurants in both states before and after the increase, giving them a clean before-and-after comparison across two otherwise similar places. The method they use is difference-in-differences (DiD). Instead of just asking “did employment change in New Jersey?”, the approach asks “did employment change in New Jersey more than it changed in Pennsylvania?”</p>
+<p>If the two states would have followed similar employment trends without the policy, then any gap that opens up after April 1992 must be due to the minimum wage increase. This parallel trends assumption is reasonable here: New Jersey and Pennsylvania are neighbors, their fast-food industries look similar, and there is no obvious reason why they would have diverged on their own.</p>
+</section>
+<section id="main-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="main-analysis">Main Analysis</h2>
+<section id="data-and-variable-construction" class="level3">
+<h3 class="anchored" data-anchor-id="data-and-variable-construction">Data and Variable Construction</h3>
+<p>The data include fast-food restaurants surveyed before and after the policy change, so we can directly observe how employment changes over time at the store level.</p>
+<p>To measure employment, I construct full-time equivalent (FTE) employment as the number of full-time workers plus half of part-time workers, along with managers.</p>
+<div id="88941071" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"emp_before"</span>] <span class="op">=</span> df[<span class="st">"empft_before"</span>] <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> df[<span class="st">"emppt_before"</span>] <span class="op">+</span> df[<span class="st">"nmgrs_before"</span>]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"emp_after"</span>] <span class="op">=</span> df[<span class="st">"empft_after"</span>] <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> df[<span class="st">"emppt_after"</span>] <span class="op">+</span> df[<span class="st">"nmgrs_after"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="handling-store-closures" class="level3">
+<h3 class="anchored" data-anchor-id="handling-store-closures">Handling Store Closures</h3>
+<p>A key step in the replication is deciding how to treat stores that closed between the two survey waves.</p>
+<p>Following the original paper, stores that permanently closed or closed due to external factors are assigned zero employment in the post-period.</p>
+<p>Stores that were temporarily closed, for example for renovations, are excluded. Their employment does not reflect normal business activity and would distort the results if included.</p>
+<p>These choices matter because different ways of handling closures can change the estimated employment effects.</p>
+<div id="61ea5ebc" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"status2"</span>].isin([<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>]), <span class="st">"emp_after"</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"status2"</span>] <span class="op">==</span> <span class="dv">2</span>, <span class="st">"emp_after"</span>] <span class="op">=</span> np.nan</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_clean <span class="op">=</span> df[df[<span class="st">"status2"</span>].isin([<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>])].copy()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_clean <span class="op">=</span> df_clean[df_clean[<span class="st">"emp_before"</span>].notna()]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_clean <span class="op">=</span> df_clean[df_clean[<span class="st">"emp_after"</span>].notna()]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="baseline-characteristics-table-2" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-characteristics-table-2">Baseline Characteristics (Table 2)</h3>
+<p>Before the policy change, restaurants in New Jersey and Pennsylvania look very similar in terms of employment and wages.</p>
+<p>The table shows that both FTE employment and starting wages are close across the two states. This suggests that the two groups are comparable before the policy.</p>
+<p>This is important because the DiD approach relies on the idea that the treatment and control groups would follow the similar trends without the policy. Since the two states look similar before the change, it is more reasonable to treat Pennsylvania as a valid comparison group.</p>
+<div id="a2599b4a" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>table2 <span class="op">=</span> df_clean.groupby(<span class="st">"state"</span>)[[<span class="st">"emp_before"</span>, <span class="st">"wage_before"</span>]].mean().<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>table2.index <span class="op">=</span> [<span class="st">"Pennsylvania"</span>, <span class="st">"New Jersey"</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(table2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              emp_before  wage_before
+Pennsylvania       23.38         4.63
+New Jersey         20.40         4.61</code></pre>
+</div>
+</div>
+</section>
+<section id="difference-in-differences-results" class="level3">
+<h3 class="anchored" data-anchor-id="difference-in-differences-results">Difference-in-Differences Results</h3>
+<div id="0835df4e" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_clean[<span class="st">"change_emp"</span>] <span class="op">=</span> df_clean[<span class="st">"emp_after"</span>] <span class="op">-</span> df_clean[<span class="st">"emp_before"</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Before"</span>: df_clean.groupby(<span class="st">"state"</span>)[<span class="st">"emp_before"</span>].mean(),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"After"</span>:  df_clean.groupby(<span class="st">"state"</span>)[<span class="st">"emp_after"</span>].mean(),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Change"</span>: df_clean.groupby(<span class="st">"state"</span>)[<span class="st">"change_emp"</span>].mean()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>summary.index <span class="op">=</span> [<span class="st">"Pennsylvania"</span>, <span class="st">"New Jersey"</span>]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>summary.loc[<span class="st">"Difference (DiD)"</span>] <span class="op">=</span> summary.loc[<span class="st">"New Jersey"</span>] <span class="op">-</span> summary.loc[<span class="st">"Pennsylvania"</span>]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary.<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>pa <span class="op">=</span> summary.loc[<span class="st">"Pennsylvania"</span>, <span class="st">"Change"</span>]</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>nj <span class="op">=</span> summary.loc[<span class="st">"New Jersey"</span>, <span class="st">"Change"</span>]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>did <span class="op">=</span> summary.loc[<span class="st">"Difference (DiD)"</span>, <span class="st">"Change"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Before  After  Change
+Pennsylvania       23.38  21.10   -2.28
+New Jersey         20.40  20.76    0.36
+Difference (DiD)   -2.98  -0.33    2.65</code></pre>
+</div>
+</div>
+<p>I first calculate the change in employment for each store and then compare the averages across states.</p>
+<p>The table above replicates Table 3 from Card and Krueger (1994), showing employment before and after the policy, along with the change over time.</p>
+<p>In Pennsylvania, employment fell by 2.28 FTE workers on average. In New Jersey, it increased slightly by 0.36. The difference between these two changes is 2.65, which is close to the result reported in the paper.</p>
+<p>If we only look at New Jersey, the increase of 0.36 seems quite small, but Pennsylvania helps us understand what was happening without the policy. There, employment was falling, which suggests that overall conditions were pushing employment down in both states.</p>
+<p>Compared to that, New Jersey did not experience the same decline and actually improved slightly. The DiD estimate captures this difference between the two states and reflects the effect of the policy.</p>
+</section>
+<section id="regression-results" class="level3">
+<h3 class="anchored" data-anchor-id="regression-results">Regression Results</h3>
+<p>To double-check the result, I run a simple regression using the change in employment as the outcome and an indicator for New Jersey.</p>
+<p>This corresponds to Table 4, column (i) in the paper.</p>
+<p>The constant (-2.28) represents the average change in Pennsylvania. The coefficient on the New Jersey indicator (2.65) tells us how much more employment changed in New Jersey compared to Pennsylvania.</p>
+<p>This is exactly the same as the DiD estimate above. The p-value of 0.02 suggests that the result is statistically significant.</p>
+<div id="91e1c29d" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> sm.add_constant(df_clean[<span class="st">"state"</span>])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> sm.OLS(df_clean[<span class="st">"change_emp"</span>], X).fit()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:             change_emp   R-squared:                       0.013
+Model:                            OLS   Adj. R-squared:                  0.011
+Method:                 Least Squares   F-statistic:                     5.197
+Date:                Wed, 22 Apr 2026   Prob (F-statistic):             0.0232
+Time:                        22:26:42   Log-Likelihood:                -1395.8
+No. Observations:                 386   AIC:                             2796.
+Df Residuals:                     384   BIC:                             2803.
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -2.2833      1.042     -2.192      0.029      -4.332      -0.235
+state          2.6457      1.161      2.280      0.023       0.364       4.928
+==============================================================================
+Omnibus:                       32.105   Durbin-Watson:                   2.189
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):               87.886
+Skew:                          -0.360   Prob(JB):                     8.24e-20
+Kurtosis:                       5.224   Cond. No.                         4.33
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="additional" class="level2">
+<h2 class="anchored" data-anchor-id="additional">Additional</h2>
+<section id="visualization" class="level3">
+<h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
+<p>The figure below presents graphically what Card and Krueger report only in tables. Pennsylvania’s bar goes down, New Jersey’s goes up. The gap between them is the DiD estimate of +2.65. What stands out is not just that New Jersey increased, but that it moved in the opposite direction from Pennsylvania during the same period and under the same broader economic conditions. That divergence is what the DiD design attributes to the minimum wage increase.</p>
+<div id="48c3cbc0" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-8-output-1.png" width="526" height="357" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>The results show that employment did not fall after the minimum wage increase.</p>
+<p>One possible explanation is that the fast-food labor market is not perfectly competitive. In a standard competitive model, higher minimum wages should reduce employment.</p>
+<p>But if firms have some wage-setting power, they may be paying workers less than their marginal productivity and hiring fewer workers than is efficient. In that case, a higher minimum wage can increase employment instead.</p>
+<p>This explanation fits the pattern we see in the data.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, this replication supports the main conclusion of Card and Krueger (1994): the minimum wage increase in New Jersey did not reduce employment.</p>
+<p>More broadly, the results suggest that the relationship between minimum wages and employment is more complex than standard economic theory predicts.</p>
+<p>This shows why it is important to look at data when evaluating economic policies, rather than relying only on theory.</p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
