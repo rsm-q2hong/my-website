@@ -222,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="data-and-variable-construction">Data and Variable Construction</h3>
 <p>The data include fast-food restaurants surveyed before and after the policy change, so we can directly observe how employment changes over time at the store level.</p>
 <p>To measure employment, I construct full-time equivalent (FTE) employment as the number of full-time workers plus half of part-time workers, along with managers.</p>
-<div id="88941071" class="cell" data-execution_count="2">
+<div id="1f2ab80d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"emp_before"</span>] <span class="op">=</span> df[<span class="st">"empft_before"</span>] <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> df[<span class="st">"emppt_before"</span>] <span class="op">+</span> df[<span class="st">"nmgrs_before"</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"emp_after"</span>] <span class="op">=</span> df[<span class="st">"empft_after"</span>] <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> df[<span class="st">"emppt_after"</span>] <span class="op">+</span> df[<span class="st">"nmgrs_after"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Following the original paper, stores that permanently closed or closed due to external factors are assigned zero employment in the post-period.</p>
 <p>Stores that were temporarily closed, for example for renovations, are excluded. Their employment does not reflect normal business activity and would distort the results if included.</p>
 <p>These choices matter because different ways of handling closures can change the estimated employment effects.</p>
-<div id="61ea5ebc" class="cell" data-execution_count="3">
+<div id="0c7bbc9b" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"status2"</span>].isin([<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>]), <span class="st">"emp_after"</span>] <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df.loc[df[<span class="st">"status2"</span>] <span class="op">==</span> <span class="dv">2</span>, <span class="st">"emp_after"</span>] <span class="op">=</span> np.nan</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -247,7 +247,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Before the policy change, restaurants in New Jersey and Pennsylvania look very similar in terms of employment and wages.</p>
 <p>The table shows that both FTE employment and starting wages are close across the two states. This suggests that the two groups are comparable before the policy.</p>
 <p>This is important because the DiD approach relies on the idea that the treatment and control groups would follow the similar trends without the policy. Since the two states look similar before the change, it is more reasonable to treat Pennsylvania as a valid comparison group.</p>
-<div id="a2599b4a" class="cell" data-execution_count="4">
+<div id="9977437d" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>table2 <span class="op">=</span> df_clean.groupby(<span class="st">"state"</span>)[[<span class="st">"emp_before"</span>, <span class="st">"wage_before"</span>]].mean().<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>table2.index <span class="op">=</span> [<span class="st">"Pennsylvania"</span>, <span class="st">"New Jersey"</span>]</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(table2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -260,7 +260,7 @@ New Jersey         20.40         4.61</code></pre>
 </section>
 <section id="difference-in-differences-results" class="level3">
 <h3 class="anchored" data-anchor-id="difference-in-differences-results">Difference-in-Differences Results</h3>
-<div id="0835df4e" class="cell" data-execution_count="5">
+<div id="ba624b97" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_clean[<span class="st">"change_emp"</span>] <span class="op">=</span> df_clean[<span class="st">"emp_after"</span>] <span class="op">-</span> df_clean[<span class="st">"emp_before"</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> pd.DataFrame({</span>
@@ -294,7 +294,7 @@ Difference (DiD)   -2.98  -0.33    2.65</code></pre>
 <p>This corresponds to Table 4, column (i) in the paper.</p>
 <p>The constant (-2.28) represents the average change in Pennsylvania. The coefficient on the New Jersey indicator (2.65) tells us how much more employment changed in New Jersey compared to Pennsylvania.</p>
 <p>This is exactly the same as the DiD estimate above. The p-value of 0.02 suggests that the result is statistically significant.</p>
-<div id="91e1c29d" class="cell" data-execution_count="6">
+<div id="483ccb67" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> sm.add_constant(df_clean[<span class="st">"state"</span>])</span>
@@ -308,7 +308,7 @@ Dep. Variable:             change_emp   R-squared:                       0.013
 Model:                            OLS   Adj. R-squared:                  0.011
 Method:                 Least Squares   F-statistic:                     5.197
 Date:                Wed, 22 Apr 2026   Prob (F-statistic):             0.0232
-Time:                        22:26:42   Log-Likelihood:                -1395.8
+Time:                        23:19:18   Log-Likelihood:                -1395.8
 No. Observations:                 386   AIC:                             2796.
 Df Residuals:                     384   BIC:                             2803.
 Df Model:                           1                                         
@@ -336,7 +336,7 @@ Notes:
 <section id="visualization" class="level3">
 <h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
 <p>The figure below presents graphically what Card and Krueger report only in tables. Pennsylvania’s bar goes down, New Jersey’s goes up. The gap between them is the DiD estimate of +2.65. What stands out is not just that New Jersey increased, but that it moved in the opposite direction from Pennsylvania during the same period and under the same broader economic conditions. That divergence is what the DiD design attributes to the minimum wage increase.</p>
-<div id="48c3cbc0" class="cell" data-execution_count="7">
+<div id="f966d791" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">

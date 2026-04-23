@@ -267,7 +267,7 @@ window.Quarto = {
 \theta = \pi_A - \pi_B = 0.04
 \]</span></p>
 <p>This controlled setup allows us to evaluate how well our statistical procedures recover the true effect.</p>
-<div id="ddf05b71" class="cell" data-execution_count="1">
+<div id="485bb032" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">123</span>)</span>
@@ -281,11 +281,11 @@ window.Quarto = {
 <section id="the-law-of-large-numbers" class="level2">
 <h2 class="anchored" data-anchor-id="the-law-of-large-numbers">The Law of Large Numbers</h2>
 <p>The Law of Large Numbers implies that as the sample size increases, the estimator <span class="math inline">\(\hat\theta = \bar{X}_A - \bar{X}_B\)</span> will converge to the true value.</p>
-<div id="2539585f" class="cell" data-execution_count="2">
+<div id="ffa716aa" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>diff <span class="op">=</span> A <span class="op">-</span> B</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cum_avg <span class="op">=</span> np.cumsum(diff) <span class="op">/</span> np.arange(<span class="dv">1</span>, <span class="bu">len</span>(diff)<span class="op">+</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="f6b3154a" class="cell" data-execution_count="3">
+<div id="f7bc10b5" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -302,7 +302,7 @@ window.Quarto = {
 <p>While <span class="math inline">\(\hat{\theta}\)</span> provides a point estimate, it does not indicate how precise that estimate is. To assess reliability, we need to measure how much it would vary across repeated samples.</p>
 <p>Bootstrap resampling offers a practical way to approximate this variability. Instead of relying solely on theoretical formulas, it constructs an empirical sampling distribution by repeatedly resampling from the observed data.</p>
 <p>For each resample, we compute: <span class="math inline">\(\hat\theta^* = \bar{X}_A^* - \bar{X}_B^*\)</span></p>
-<div id="67a1eb15" class="cell" data-execution_count="4">
+<div id="9481d0ad" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>boot_theta <span class="op">=</span> []</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
@@ -318,7 +318,7 @@ window.Quarto = {
 <p>The analytical standard error is given by: <span class="math display">\[
 SE(\hat\theta) = \sqrt{\frac{\hat\pi_A(1 - \hat\pi_A)}{n_A} + \frac{\hat\pi_B(1 - \hat\pi_B)}{n_B}}
 \]</span></p>
-<div id="e51e6336" class="cell" data-execution_count="5">
+<div id="e269da8b" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-stdout">
 <pre><code>Bootstrap SE: 0.0179
 Analytical SE: 0.018</code></pre>
@@ -329,7 +329,7 @@ Analytical SE: 0.018</code></pre>
 <section id="the-central-limit-theorem" class="level2">
 <h2 class="anchored" data-anchor-id="the-central-limit-theorem">The Central Limit Theorem</h2>
 <p>While the Law of Large Numbers explains convergence, the Central Limit Theorem describes the shape of the sampling distribution. The sampling distribution of <span class="math inline">\(\hat\theta = \bar{X}_A - \bar{X}_B\)</span> approaches a Normal distribution as the sample size increases.</p>
-<div id="1f2c4d50" class="cell" data-execution_count="6">
+<div id="dada9648" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -349,7 +349,7 @@ Analytical SE: 0.018</code></pre>
 <p>The test statistic is: <span class="math display">\[
 z = \frac{\hat\theta - 0}{SE(\hat\theta)}
 \]</span></p>
-<div id="2f8094bc" class="cell" data-execution_count="7">
+<div id="1e931a15" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>theta_hat <span class="op">=</span> np.mean(A) <span class="op">-</span> np.mean(B)</span>
@@ -371,7 +371,7 @@ p-value: 0.7392</code></pre>
 Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i
 \]</span></p>
 <p>where <span class="math inline">\(\beta_1 = \pi_A - \pi_B = \theta\)</span></p>
-<div id="7ce63cb1" class="cell" data-execution_count="8">
+<div id="8ac22975" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -412,7 +412,7 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">Time:</th>
-<td>22:26:36</td>
+<td>23:19:13</td>
 <th data-quarto-table-cell-role="th">Log-Likelihood:</th>
 <td>-1020.0</td>
 </tr>
@@ -518,7 +518,7 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i
 <p>In practice, experiments are not always conducted as cleanly as theory assumes. Suppose that instead of waiting until all 1,000 observations per group are collected, results are evaluated repeatedly during the experiment. For example, we may check for statistical significance after every 100 observations, and stop early if a significant result is found.</p>
 <p>At first glance, this may seem reasonable. However, under classical frequentist statistics, this practice introduces a serious problem. A single hypothesis test conducted at the <span class="math inline">\(\alpha = 0.05\)</span> level has a 5% probability of producing a false positive when the null hypothesis is true. But when multiple tests are performed on the same accumulating data, each additional “peek” creates another opportunity to falsely reject the null hypothesis. As a result, the overall Type I error rate is no longer controlled at 5%.</p>
 <p>To illustrate this, I simulate a setting in which the null hypothesis is true, so that there is no real difference between the two groups:</p>
-<div id="a05f721d" class="cell" data-execution_count="9">
+<div id="accd4885" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>count <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10000</span>):</span>
