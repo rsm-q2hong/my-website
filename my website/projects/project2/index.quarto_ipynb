@@ -1,0 +1,238 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Minimum Wage and Employment: A Simple Replication\"\n",
+        "format: html\n",
+        "---\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "A common prediction in economics is that increasing the minimum wage should reduce employment, since firms face higher labor costs. However, empirical evidence does not always support this idea.\n",
+        "\n",
+        "In this post, I replicate part of Card and Krueger (1994), which studies a minimum wage increase in New Jersey in 1992. Pennsylvania, which did not change its minimum wage at the time, serves as a comparison group. This setting allows for a difference-in-differences (DiD) approach to estimate the effect of the policy.\n",
+        "\n",
+        "\n",
+        "## Data and Variable Construction\n",
+        "\n",
+        "The data include fast-food restaurants surveyed before and after the policy change."
+      ],
+      "id": "8340ee6d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "#| output: false\n",
+        "\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "DATA_PATH = \"/Users/qianhuihong/Downloads/njmin/public.dat\"\n",
+        "\n",
+        "colspecs = [\n",
+        "    (0,3),(4,5),(6,7),(8,9),\n",
+        "    (10,11),(12,13),(14,15),(16,17),(18,19),(20,21),\n",
+        "    (22,24),(25,30),(31,36),(37,42),(43,48),\n",
+        "    (109,110),\n",
+        "    (121,126),(127,132),(133,138),(139,144)\n",
+        "]\n",
+        "\n",
+        "colnames = [\n",
+        "    \"sheet\",\"chain\",\"co_owned\",\"state\",\n",
+        "    \"southj\",\"centralj\",\"northj\",\"pa1\",\"pa2\",\"shore\",\n",
+        "    \"ncalls\",\n",
+        "    \"empft_before\",\"emppt_before\",\"nmgrs_before\",\"wage_before\",\n",
+        "    \"status2\",\n",
+        "    \"empft_after\",\"emppt_after\",\"nmgrs_after\",\"wage_after\"\n",
+        "]\n",
+        "\n",
+        "df = pd.read_fwf(DATA_PATH, colspecs=colspecs, names=colnames)\n",
+        "\n",
+        "# cleaning\n",
+        "df = df.replace(\".\", np.nan)\n",
+        "df = df.apply(pd.to_numeric, errors=\"coerce\")"
+      ],
+      "id": "8776f395",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "To measure employment, I construct full-time equivalent (FTE) employment as the sum of full-time workers, half of part-time workers, and managers:"
+      ],
+      "id": "a2e1f0ea"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df[\"emp_before\"] = df[\"empft_before\"] + 0.5 * df[\"emppt_before\"] + df[\"nmgrs_before\"]\n",
+        "df[\"emp_after\"] = df[\"empft_after\"] + 0.5 * df[\"emppt_after\"] + df[\"nmgrs_after\"]"
+      ],
+      "id": "f23b8327",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "I define a treatment variable equal to 1 for New Jersey and 0 for Pennsylvania.\n",
+        "\n",
+        "\n",
+        "## Handling Store Closures\n",
+        "\n",
+        "A key step in the replication is how to treat stores that closed.\n",
+        "\n",
+        "Following the original paper, I assign zero employment in the post-period to stores that were permanently closed or closed due to external factors. Stores that were temporarily closed (such as for renovations) are excluded."
+      ],
+      "id": "eb1c7b26"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df.loc[df[\"status2\"].isin([3,4,5]), \"emp_after\"] = 0\n",
+        "df.loc[df[\"status2\"] == 2, \"emp_after\"] = np.nan\n",
+        "\n",
+        "df_clean = df[df[\"status2\"].isin([1,3,4,5])].copy()\n",
+        "df_clean = df_clean[df_clean[\"emp_before\"].notna()]\n",
+        "df_clean = df_clean[df_clean[\"emp_after\"].notna()]"
+      ],
+      "id": "98528ac7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Difference-in-Differences Results\n",
+        "\n",
+        "I compute the change in employment for each store and then compare averages across states."
+      ],
+      "id": "a03d7c5f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_clean[\"change_emp\"] = df_clean[\"emp_after\"] - df_clean[\"emp_before\"]\n",
+        "\n",
+        "means = df_clean.groupby(\"state\")[\"change_emp\"].mean()\n",
+        "pa = means[0]\n",
+        "nj = means[1]\n",
+        "did = nj - pa\n",
+        "\n",
+        "print(pa, nj, did)"
+      ],
+      "id": "c09fd9c5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The results are:\n",
+        "\n",
+        "Pennsylvania: −2.28\n",
+        "New Jersey: +0.36\n",
+        "Difference-in-differences: +2.65\n",
+        "\n",
+        "Employment decreased in Pennsylvania but slightly increased in New Jersey. The difference between the two is positive.\n",
+        "\n",
+        "\n",
+        "## Regression Results\n",
+        "\n",
+        "To confirm the result, I estimate a regression where the change in employment is regressed on the treatment indicator:"
+      ],
+      "id": "474bfbc5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import statsmodels.api as sm\n",
+        "\n",
+        "X = sm.add_constant(df_clean[\"state\"])\n",
+        "model = sm.OLS(df_clean[\"change_emp\"], X).fit()\n",
+        "\n",
+        "print(model.summary())"
+      ],
+      "id": "28b9b6b4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The estimated treatment effect is about 2.65, with a p-value around 0.02. This indicates that the effect is statistically significant.\n",
+        "\n",
+        "## Visualization\n",
+        "\n",
+        "The figure below shows the average change in employment in the two states."
+      ],
+      "id": "4479bd7d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "plt.figure(figsize=(6,4))\n",
+        "plt.bar([\"Pennsylvania\", \"New Jersey\"], means)\n",
+        "\n",
+        "plt.title(\"Change in Employment After Minimum Wage Increase\")\n",
+        "plt.ylabel(\"Change in Employment (FTE)\")\n",
+        "plt.axhline(0)\n",
+        "\n",
+        "plt.show()"
+      ],
+      "id": "2deb143a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The pattern in the figure matches the numerical results: employment falls in Pennsylvania but increases slightly in New Jersey.\n",
+        "\n",
+        "\n",
+        "## Discussion\n",
+        "\n",
+        "The main finding is that employment did not decline in New Jersey after the minimum wage increase. Instead, relative to Pennsylvania, employment increased.\n",
+        "\n",
+        "My estimate is slightly smaller than the original paper’s result, which is around 2.76. This difference is likely due to differences in sample selection and data cleaning.\n",
+        "\n",
+        "\n",
+        "## Conclusion\n",
+        "\n",
+        "Overall, this replication supports the main conclusion of Card and Krueger (1994). The minimum wage increase in New Jersey did not reduce employment.\n",
+        "\n",
+        "More broadly, this suggests that the relationship between minimum wages and employment may be more complex than standard economic theory predicts."
+      ],
+      "id": "967206fe"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/opt/anaconda3/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
