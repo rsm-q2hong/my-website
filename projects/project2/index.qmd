@@ -12,7 +12,8 @@ A common prediction in economics is that raising the minimum wage reduces employ
 Card and Krueger (1994) test this prediction using a natural experiment. On April 1, 1992, New Jersey raised its minimum wage from $4.25 to $5.05 per hour. Pennsylvania, right next door, kept its wage unchanged. The authors surveyed fast-food restaurants in both states before and after the increase, giving them a clean before-and-after comparison across two otherwise similar places.
 The method they use is difference-in-differences (DiD). Instead of just asking "did employment change in New Jersey?", the approach asks "did employment change in New Jersey more than it changed in Pennsylvania?"
 
-If the two states would have followed similar employment trends without the policy, then any gap that opens up after April 1992 must be due to the minimum wage increase. This parallel trends assumption is reasonable here: New Jersey and Pennsylvania are neighbors, their fast-food industries look similar, and there is no obvious reason why they would have diverged on their own.
+If the two states would have followed similar employment trends without the policy, then any gap that opens up after April 1992 must be due to the minimum wage increase. This is known as the parallel trends assumption, and it is the key identifying assumption behind the DiD design.
+The assumption is not directly testable, since we cannot observe what would have happened to New Jersey without the policy. However, it is more credible when the treatment and control groups look similar before the intervention. New Jersey and Pennsylvania are neighboring states with comparable fast-food industries, similar demographic profiles, and no major policy differences in the period leading up to April 1992. The baseline characteristics shown in Table 2 further support this: employment and wages were close across both states before the change.
 
 
 
@@ -156,30 +157,41 @@ print(model.summary())
 
 ### Visualization
 
-The figure below presents graphically what Card and Krueger report only in tables. Pennsylvania's bar goes down, New Jersey's goes up. The gap between them is the DiD estimate of +2.65. What stands out is not just that New Jersey increased, but that it moved in the opposite direction from Pennsylvania during the same period and under the same broader economic conditions. That divergence is what the DiD design attributes to the minimum wage increase.
+The figure below shows average FTE employment in each state before and after the policy change. Pennsylvania saw a decline, while New Jersey's employment held steady and slightly increased. This divergence — two states facing the same broader economic conditions but moving in opposite directions — is what the DiD design attributes to the minimum wage increase. The DiD estimate of +2.65 represents the gap between these two trends.
 
 ```{python}
 #| echo: false
 
+#| echo: false
+
 import matplotlib.pyplot as plt
+import numpy as np
 
-plt.figure(figsize=(6,4))
-bars = plt.bar(["Pennsylvania", "New Jersey"], [pa, nj])
+before = summary.loc[["Pennsylvania", "New Jersey"], "Before"].values
+after  = summary.loc[["Pennsylvania", "New Jersey"], "After"].values
 
-for bar in bars:
-    y = bar.get_height()
-    plt.text(
-        bar.get_x() + bar.get_width()/2,
-        y,
-        f"{y:.2f}",
-        ha='center',
-        va='bottom'
-    )
+x = np.arange(2)
+width = 0.35
 
-plt.title("Change in Employment After Minimum Wage Increase")
-plt.ylabel("Change in Employment (FTE)")
-plt.axhline(0)
+fig, ax = plt.subplots(figsize=(7, 5))
+bars1 = ax.bar(x - width/2, before, width, label="Before", color="#7bafd4")
+bars2 = ax.bar(x + width/2, after,  width, label="After",  color="#f4a261")
 
+for bar in bars1:
+    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
+            f"{bar.get_height():.2f}", ha='center', va='bottom', fontsize=9)
+for bar in bars2:
+    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
+            f"{bar.get_height():.2f}", ha='center', va='bottom', fontsize=9)
+
+ax.set_xticks(x)
+ax.set_xticklabels(["Pennsylvania", "New Jersey"])
+ax.set_ylabel("Average FTE Employment")
+ax.set_title("Employment Before and After Minimum Wage Increase")
+ax.legend()
+ax.set_ylim(0, max(before.max(), after.max()) * 1.15)
+
+plt.tight_layout()
 plt.show()
 ```
 
@@ -187,7 +199,7 @@ plt.show()
 
 ## Discussion
 
-The results show that employment did not fall after the minimum wage increase.
+The results provide no evidence that employment fell after the minimum wage increase.
 
 One possible explanation is that the fast-food labor market is not perfectly competitive. In a standard competitive model, higher minimum wages should reduce employment.
 
