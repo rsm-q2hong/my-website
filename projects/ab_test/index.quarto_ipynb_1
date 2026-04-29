@@ -1,0 +1,394 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: A/B Testing a Call to Action\n",
+        "subtitle: \"Simulating Key Ideas from Classical Frequentist Statistics\"\n",
+        "author: \"Qianhui Hong\"\n",
+        "date: today\n",
+        "format: html\n",
+        "---\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "I run a website where visitors can subscribe to a newsletter on the homepage. I want to increase the number of sign-ups, so I am considering changing the wording of the call to action (CTA).\n",
+        "\n",
+        "I create two different versions of the CTA. One says “Sign up for our newsletter here!”, and the other says “Join us to stay updated!”. Although the difference is small, the wording may influence whether users decide to subscribe.\n",
+        "\n",
+        "To determine which version performs better, I run an A/B test. In an A/B test, visitors are randomly assigned to one of the two versions, so that each group is comparable and not biased by user characteristics. I then compare the sign-up rates between the two groups to see which CTA leads to more conversions. This allows me to make a data-driven decision instead of relying on guesswork.\n",
+        "\n",
+        "\n",
+        "\n",
+        "## The A/B Test as a Statistical Problem\n",
+        "\n",
+        "Each visitor either signs up or does not, so the outcome can be represented as a binary variable. This naturally leads to a Bernoulli model.\n",
+        "\n",
+        "Let $\\pi_A$ denote the probability of signing up under CTA A, and $\\pi_B$ denote the probability under CTA B. The parameter of interest is:\n",
+        "\n",
+        "$$\n",
+        "\\theta = \\pi_A - \\pi_B\n",
+        "$$\n",
+        "\n",
+        "Since the true probabilities are unknown, we estimate them using sample means:\n",
+        "\n",
+        "$$\n",
+        "\\hat{\\theta} = \\bar{X}_A - \\bar{X}_B\n",
+        "$$\n",
+        "\n",
+        "This quantity represents the observed difference in proportions between the two groups.\n",
+        "\n",
+        "\n",
+        "## Simulating Data\n",
+        "\n",
+        "To better understand how the estimator behaves, I simulate data in a setting where the true probabilities are known:\n",
+        "\n",
+        "$$\n",
+        "\\pi_A = 0.22, \\quad \\pi_B = 0.18\n",
+        "$$\n",
+        "\n",
+        "so that\n",
+        "\n",
+        "$$\n",
+        "\\theta = \\pi_A - \\pi_B = 0.04\n",
+        "$$\n",
+        "\n",
+        "This controlled setup allows us to evaluate how well our statistical procedures recover the true effect."
+      ],
+      "id": "6719520e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "\n",
+        "np.random.seed(123)\n",
+        "\n",
+        "A = np.random.binomial(1, 0.22, 1000)\n",
+        "B = np.random.binomial(1, 0.18, 1000)"
+      ],
+      "id": "b1252d75",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Here, each observation is drawn from a Bernoulli distribution, where a value of 1 represents a successful sign-up and 0 represents no sign-up. The sample size of 1,000 per group ensures that we have enough data to observe the behavior of the estimator while still retaining randomness.\n",
+        "\n",
+        "By working in a setting where the true value is known, we can directly assess whether the estimators and inference procedures introduced later are able to accurately recover that value.\n",
+        "\n",
+        "\n",
+        "## The Law of Large Numbers\n",
+        "\n",
+        "The Law of Large Numbers implies that as the sample size increases, the estimator $\\hat\\theta = \\bar{X}_A - \\bar{X}_B$ will converge to the true value."
+      ],
+      "id": "3950b8b6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "diff = A - B\n",
+        "cum_avg = np.cumsum(diff) / np.arange(1, len(diff)+1)"
+      ],
+      "id": "f89db294",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "plt.plot(cum_avg)\n",
+        "plt.axhline(0.04, linestyle='--')\n",
+        "plt.xlabel(\"Number of Observations\")\n",
+        "plt.ylabel(\"Running Estimate of Theta\")\n",
+        "plt.title(\"Law of Large Numbers in Action\")\n",
+        "plt.show()"
+      ],
+      "id": "f4b5d772",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The figure tracks the running estimate of $\\hat{\\theta}$ as the sample size grows. At small sample sizes, the estimate fluctuates substantially, reflecting the randomness inherent in limited data. As more observations are incorporated, these fluctuations diminish and the estimate stabilizes near the true value.\n",
+        "\n",
+        "This visualization is important because it demonstrates not just convergence, but also the practical implication: reliable conclusions require sufficiently large samples.\n",
+        "\n",
+        "\n",
+        "## Bootstrap Standard Errors\n",
+        "\n",
+        "While $\\hat{\\theta}$ provides a point estimate, it does not indicate how precise that estimate is. To assess reliability, we need to measure how much it would vary across repeated samples.\n",
+        "\n",
+        "Bootstrap resampling offers a practical way to approximate this variability. Instead of relying solely on theoretical formulas, it constructs an empirical sampling distribution by repeatedly resampling from the observed data.\n",
+        "\n",
+        "For each resample, we compute:\n",
+        " $\\hat\\theta^* = \\bar{X}_A^* - \\bar{X}_B^*$"
+      ],
+      "id": "d616e693"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "boot_theta = []\n",
+        "\n",
+        "for _ in range(1000):\n",
+        "    A_star = np.random.choice(A, size=1000, replace=True)\n",
+        "    B_star = np.random.choice(B, size=1000, replace=True)\n",
+        "    theta_star = np.mean(A_star) - np.mean(B_star)\n",
+        "    boot_theta.append(theta_star)\n",
+        "\n",
+        "boot_theta = np.array(boot_theta)\n",
+        "boot_se = np.std(boot_theta)"
+      ],
+      "id": "cf5aa477",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This procedure produces many bootstrap estimates $\\hat{\\theta}^*$, which approximate the sampling distribution of $\\hat{\\theta}$. The standard deviation of these values provides an estimate of the standard error.\n",
+        "\n",
+        "The analytical standard error is given by:\n",
+        "$$\n",
+        "SE(\\hat\\theta) = \\sqrt{\\frac{\\hat\\pi_A(1 - \\hat\\pi_A)}{n_A} + \\frac{\\hat\\pi_B(1 - \\hat\\pi_B)}{n_B}}\n",
+        "$$"
+      ],
+      "id": "d76955ae"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "\n",
+        "pA = np.mean(A)\n",
+        "pB = np.mean(B)\n",
+        "\n",
+        "nA = len(A)\n",
+        "nB = len(B)\n",
+        "\n",
+        "analytical_se = np.sqrt(\n",
+        "    (pA*(1-pA))/nA +\n",
+        "    (pB*(1-pB))/nB\n",
+        ")\n",
+        "\n",
+        "print(\"Bootstrap SE:\", round(boot_se,4))\n",
+        "print(\"Analytical SE:\", round(analytical_se,4))"
+      ],
+      "id": "4f536b81",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The two estimates are nearly identical. This agreement is meaningful: it shows that a simulation-based approach can recover the same uncertainty measure as a theoretical derivation. In practice, this is valuable because bootstrap methods remain applicable even when analytical formulas are difficult to derive.\n",
+        "\n",
+        "\n",
+        "## The Central Limit Theorem\n",
+        "\n",
+        "While the Law of Large Numbers explains convergence, the Central Limit Theorem describes the shape of the sampling distribution. The sampling distribution of $\\hat\\theta = \\bar{X}_A - \\bar{X}_B$ approaches a Normal distribution as the sample size increases."
+      ],
+      "id": "f2234b26"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "\n",
+        "fig, axes = plt.subplots(2,2, figsize=(10,8))\n",
+        "\n",
+        "sizes = [25,50,100,500]\n",
+        "\n",
+        "for i,n in enumerate(sizes):\n",
+        "    estimates = []\n",
+        "    for _ in range(1000):\n",
+        "        A_s = np.random.binomial(1,0.22,n)\n",
+        "        B_s = np.random.binomial(1,0.18,n)\n",
+        "        estimates.append(np.mean(A_s)-np.mean(B_s))\n",
+        "    ax = axes[i//2, i%2]\n",
+        "    ax.hist(estimates, bins=20)\n",
+        "    ax.set_title(f\"n = {n}\")\n",
+        "\n",
+        "plt.show()"
+      ],
+      "id": "57743407",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The figure displays the distribution of $\\hat{\\theta}$ for increasing sample sizes. When the sample size is small, the distribution appears irregular and skewed. As the sample size grows, it becomes smoother and more symmetric, approaching a bell-shaped curve.\n",
+        "\n",
+        "This pattern is important because it justifies the use of Normal approximations in inference. Even when the underlying data are not Normal, the estimator itself behaves approximately normally in large samples.\n",
+        "\n",
+        "\n",
+        "## Hypothesis Testing\n",
+        "\n",
+        "Having established both the estimate and its variability, we can formally test whether the observed difference is statistically meaningful.\n",
+        "\n",
+        "We test:\n",
+        "\n",
+        "$H_0: \\theta = 0$\n",
+        "$H_1: \\theta \\neq 0$\n",
+        "\n",
+        "The test statistic is:\n",
+        "$$\n",
+        "z = \\frac{\\hat\\theta - 0}{SE(\\hat\\theta)}\n",
+        "$$\n"
+      ],
+      "id": "e8ba94f1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from scipy.stats import norm\n",
+        "\n",
+        "theta_hat = np.mean(A) - np.mean(B)\n",
+        "z = theta_hat / analytical_se\n",
+        "p_value = 2*(1 - norm.cdf(abs(z)))\n",
+        "\n",
+        "print(\"z-stat:\", round(z,4))\n",
+        "print(\"p-value:\", round(p_value,4))"
+      ],
+      "id": "dce3a8e1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The p-value represents the probability of observing a difference at least as extreme as the one obtained, assuming the null hypothesis is true. In this case, the p-value is relatively large, indicating that the observed difference can plausibly be attributed to random variation rather than a true effect.\n",
+        "\n",
+        "\n",
+        "## The T-Test as a Regression\n",
+        "\n",
+        "The same comparison can be expressed as a regression:\n",
+        "$$\n",
+        "Y_i = \\beta_0 + \\beta_1 D_i + \\varepsilon_i\n",
+        "$$\n",
+        "\n",
+        "where $\\beta_1 = \\pi_A - \\pi_B = \\theta$"
+      ],
+      "id": "b9650a10"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import statsmodels.api as sm\n",
+        "\n",
+        "Y = np.concatenate([A, B])\n",
+        "D = np.concatenate([np.ones(len(A)), np.zeros(len(B))])\n",
+        "\n",
+        "X = sm.add_constant(D)\n",
+        "model = sm.OLS(Y, X).fit()\n",
+        "\n",
+        "model.summary()"
+      ],
+      "id": "01bda9e1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The regression output provides an alternative way to interpret the A/B test results. In this model, the coefficient on the treatment indicator ($x1$) represents the difference in average outcomes between the two groups.\n",
+        "\n",
+        "Specifically, the estimated coefficient is 0.0060, which matches the previously computed $\\hat{\\theta}$. This confirms that the regression framework is equivalent to the difference-in-means approach.\n",
+        "\n",
+        "The associated p-value (0.739) is large, indicating that the estimated difference is not statistically significant. In addition, the 95% confidence interval for the coefficient includes zero, further suggesting that the observed effect may be due to random variation rather than a true underlying difference.\n",
+        "\n",
+        "Overall, the regression results reinforce the earlier conclusion: there is no strong evidence that the two CTA versions perform differently.\n",
+        "\n",
+        "\n",
+        "## The Problem with Peeking\n",
+        "\n",
+        "In practice, experiments are not always conducted as cleanly as theory assumes. Suppose that instead of waiting until all 1,000 observations per group are collected, results are evaluated repeatedly during the experiment. For example, we may check for statistical significance after every 100 observations, and stop early if a significant result is found.\n",
+        "\n",
+        "At first glance, this may seem reasonable. However, under classical frequentist statistics, this practice introduces a serious problem. A single hypothesis test conducted at the $\\alpha = 0.05$ level has a 5% probability of producing a false positive when the null hypothesis is true. But when multiple tests are performed on the same accumulating data, each additional “peek” creates another opportunity to falsely reject the null hypothesis. As a result, the overall Type I error rate is no longer controlled at 5%.\n",
+        "\n",
+        "To illustrate this, I simulate a setting in which the null hypothesis is true, so that there is no real difference between the two groups:"
+      ],
+      "id": "609449f1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "count = 0\n",
+        "\n",
+        "for _ in range(10000):\n",
+        "    A_sim = np.random.binomial(1, 0.20, 1000)\n",
+        "    B_sim = np.random.binomial(1, 0.20, 1000)\n",
+        "\n",
+        "    for i in range(100, 1001, 100):\n",
+        "        theta_hat = np.mean(A_sim[:i]) - np.mean(B_sim[:i])\n",
+        "        se = np.sqrt((0.2*0.8)/i + (0.2*0.8)/i)\n",
+        "        z = theta_hat / se\n",
+        "        p = 2*(1 - norm.cdf(abs(z)))\n",
+        "\n",
+        "        if p < 0.05:\n",
+        "            count += 1\n",
+        "            break\n",
+        "\n",
+        "print(\"False positive rate:\", count / 10000)"
+      ],
+      "id": "c46b0287",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "False positive rate: 0.1823\n",
+        "\n",
+        "The simulated false positive rate is substantially higher than the nominal 5% level. This occurs because repeatedly checking results during data collection introduces multiple opportunities to incorrectly reject the null hypothesis.\n",
+        "\n",
+        "This result highlights an important practical issue: even when statistical methods are correctly applied, improper experimental procedures—such as peeking—can lead to misleading conclusions.\n",
+        "\n",
+        "\n",
+        "## Conclusion\n",
+        "\n",
+        "This analysis illustrates how A/B testing is grounded in fundamental statistical principles, including the Law of Large Numbers, bootstrap methods, and the Central Limit Theorem.\n",
+        "\n",
+        "More importantly, it demonstrates that careful interpretation is essential. Reliable conclusions depend not only on correct statistical tools, but also on proper experimental design. Without this, even well-executed analyses may produce results that appear meaningful but are ultimately driven by randomness."
+      ],
+      "id": "6d86a692"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/opt/anaconda3/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
